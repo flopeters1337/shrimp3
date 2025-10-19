@@ -3,9 +3,11 @@ import {ReactNode, useState} from "react";
 
 /** Mantine specific imports and constants */
 import '@mantine/core/styles.css';
-import {AppShell, Burger, Group, MantineProvider, NavLink, Stack} from '@mantine/core';
+import {AppShell, Burger, Button, Group, MantineProvider, NavLink, Stack} from '@mantine/core';
 import {useDisclosure} from "@mantine/hooks";
 import {IconAdjustments, IconPlaylist, IconSpeakerphone, IconTrees} from "@tabler/icons-react";
+import {invoke} from "@tauri-apps/api";
+import {renderSettingsTab} from './components/pages/settings.tsx';
 
 enum Tab {
     Playback,
@@ -53,10 +55,20 @@ function App() {
             case Tab.Soundboard:
                 return (<p>Play soundboard cues here.</p>);
             case Tab.Settings:
-                return (<p>Change settings here.</p>);
+                return renderSettingsTab();//(<p>Change settings here.</p>);
             default:
                 return (<p>Unknown app tab.</p>);
         }
+    }
+    
+    async function buttonClicked() {
+        let greetingElement : HTMLElement | null = document.getElementById("greeting");
+        if (!greetingElement)
+        {
+            return;
+        }
+
+        greetingElement.textContent = await invoke("greet", {name: "John Smith"});
     }
 
     return (
@@ -73,6 +85,8 @@ function App() {
                 <AppShell.Header px="md">
                     <Group h="100%">
                         <Burger opened={burgerOpened} onClick={toggleBurger} size="md"/>
+                        <Button onClick={buttonClicked}>PRESS</Button>
+                        <p id="greeting"></p>
                     </Group>
                 </AppShell.Header>
 
